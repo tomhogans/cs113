@@ -2,6 +2,7 @@
 Programming Assignment 2
 Handed out: 10/2/12
 Due back: 10/15/12 by midnight
+Student: F. Thomas Hogans (125005620)
 """
 import copy
 
@@ -167,6 +168,9 @@ class SparseMatrix:
         0 0 0
         0 4 0
         """
+        if i < 0 or j > self.ncols:
+            raise IndexError("Indices out of bounds")
+
         return MATRIX
     
     def reshape(self, nr, nc):
@@ -202,7 +206,10 @@ class SparseMatrix:
         >>> zero.check()
         ([], [], [0, 0, 0, 0, 0, 0])
         """
-        pass
+        self.__data = [d*f for d in self.__data if d*f is not 0]
+        if not self.__data:
+            self.__cindex = []
+            self.__rbounds = [0] * (self.nrows + 1)
 
     def add(self, other):
         """Return a new SparseMatrix obtained by adding matrix other to self.

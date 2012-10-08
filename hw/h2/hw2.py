@@ -71,7 +71,7 @@ class SparseMatrix:
         0 0 0 0 0 0
         0 0 4 0 -4 2
         """
-        return "Not Implemented"
+        return self.getRowSlice(0, self.nrows)
 
     def setElement(self, i, j, val):
         """Set the element at given index to val; if index is out of bounds, raise Exception
@@ -107,7 +107,20 @@ class SparseMatrix:
         >>> MATRIX.getElement(4,4)
         -4
         """
-        return -10000000
+        if i < 0 or i >= self.nrows:
+            raise IndexError("Row index out of bounds")
+        if j < 0 or j >= self.ncols:
+            raise IndexError("Column index out of bounds")
+
+        data_bounds = self.__rbounds[i:i+2]
+        data_values = self.__data[data_bounds[0]:data_bounds[1]]
+        column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+        for index, position in enumerate(column_positions):
+            if position == j:
+                return data_values[index]
+
+        return 0
 
     def getRowSlice(self, i, j):
         """Return a SparseMatrix corresponding to the given slice of row indices.
@@ -121,7 +134,23 @@ class SparseMatrix:
         0 0 0 0 0 0
         0 0 4 0 -4 2
         """
-        return MATRIX
+        if i < 0 or j > self.nrows:
+            raise IndexError("Indices out of bounds")
+
+        results = []
+
+        for row in range(i, j):
+            complete_row = [0] * self.ncols
+            data_bounds = self.__rbounds[row:row+2]
+            data_values = self.__data[data_bounds[0]:data_bounds[1]]
+            column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+            for column_and_data in zip(column_positions, data_values):
+                complete_row[column_and_data[0]] = column_and_data[1]
+            
+            results.append(' '.join([str(d) for d in complete_row]))
+            
+        return '\n'.join(results)
 
     def getColumnSlice(self, i, j):
         """Return a SparseMatrix corresponding to the given slice of column indices.

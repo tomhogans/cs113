@@ -74,6 +74,17 @@ class SparseMatrix:
         """
         return self.getRowSlice(0, self.nrows)
 
+    def __getSparseIndex(self, i, j):
+        """Return the index in the __data and __cindex attributes of the 
+        element specified by the coordinates i, j in the matrix."""
+        data_bounds = self.__rbounds[i:i+2]
+        
+        for col in range(data_bounds[0], data_bounds[1]+1):
+            if self.__cindex[col] == j:
+                return col
+
+        raise IndexError("Index not found")
+
     def setElement(self, i, j, val):
         """Set the element at given index to val; if index is out of bounds, raise Exception
 
@@ -101,19 +112,26 @@ class SparseMatrix:
         if j < 0 or j >= self.ncols:
             raise IndexError("Column index out of bounds")
 
-        # If the value is being set to zero, check if the element at this
-        # position is non-zero.  If non-zero, adjust the sparse 
-        # representations.  Otherwise, return.
-        if not val and self.getElement(i, j):
-            print "Val is 0 and element exists, so we must remove it"
+        data_bounds = self.__rbounds[i:i+2]
+        data_values = self.__data[data_bounds[0]:data_bounds[1]]
+        column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+        if val == 0 and self.getElement(i, j) is not 0:
+            data_col_index = self.__getSparseIndex(i, j)
+            del self.__data[data_col_index]
+            del self.__cindex[data_col_index]
+            for index, r in enumerate(self.__rbounds):
+                if index > i:
+                    self.__rbounds[index] -= 1
             return
 
         # Check if element at position i,j is non-zero.  If so, replace it.
-        # If not, adjust sparse representation to record new value.
+        # If not, insert new value into sparse representation.
         if self.getElement(i, j):
-            print "Element is non-zero, just replace it"
+            data_col_index = self.__getSparseIndex(i, j)
+            self.__data[data_col_index] = val
         else:
-            print "Need to add new non-zero element"
+            print("Need to add new non-zero element")
 
 
     def getElement(self, i, j):

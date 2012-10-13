@@ -96,8 +96,26 @@ class SparseMatrix:
         >>> m.check()
         ([1, 3, -2, 1, 10, -1, 4, -4, 2], [1, 2, 3, 0, 2, 4, 2, 4, 5], [0, 2, 3, 6, 6, 9])
         """
-        pass
-        
+        if i < 0 or i >= self.nrows:
+            raise IndexError("Row index out of bounds")
+        if j < 0 or j >= self.ncols:
+            raise IndexError("Column index out of bounds")
+
+        # If the value is being set to zero, check if the element at this
+        # position is non-zero.  If non-zero, adjust the sparse 
+        # representations.  Otherwise, return.
+        if not val and self.getElement(i, j):
+            print "Val is 0 and element exists, so we must remove it"
+            return
+
+        # Check if element at position i,j is non-zero.  If so, replace it.
+        # If not, adjust sparse representation to record new value.
+        if self.getElement(i, j):
+            print "Element is non-zero, just replace it"
+        else:
+            print "Need to add new non-zero element"
+
+
     def getElement(self, i, j):
         """Return the element at given index; if index is out of bounds, raise Exception
 

@@ -113,8 +113,6 @@ class SparseMatrix:
             raise IndexError("Column index out of bounds")
 
         data_bounds = self.__rbounds[i:i+2]
-        data_values = self.__data[data_bounds[0]:data_bounds[1]]
-        column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
 
         if val == 0:
             if self.getElement(i, j) is not 0:
@@ -219,7 +217,16 @@ class SparseMatrix:
         if i < 0 or j > self.ncols:
             raise IndexError("Indices out of bounds")
 
-        return MATRIX
+        result = SparseMatrix(self.nrows, j - i)
+
+        for result_col, self_col in enumerate(range(i, j)):
+            print "Self_col: %d = %d in new matrix" % (self_col, result_col)
+            for row in range(self.nrows):
+                val = self.getElement(row, self_col)
+                print "setElement(%d, %d) = %s" % (row, result_col, val)
+                result.setElement(row, result_col, self.getElement(row, self_col))
+
+        return result
     
     def reshape(self, nr, nc):
         """Return a new SparseMatrix object with exactly the same data contents but
@@ -314,15 +321,7 @@ class SparseMatrix:
         4 -1 0 0 2
         6 1 2 2 4
         """
-        if self.nrows != other.nrows or self.ncols != other.ncols:
-            raise Exception("Both matrix objects must have the same dimensions")
-
-        new_matrix = SparseMatrix(self.nrows, self.ncols)
-        for row in range(self.nrows):
-            for col in range(self.ncols):
-                new_matrix.setElement(row, col,
-                        self.getElement(row, col) * other.getElement(row, col))
-        return new_matrix
+        return MATRIX
 
 # Do not modify the code below this line!!
 

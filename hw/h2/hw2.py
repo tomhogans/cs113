@@ -117,22 +117,33 @@ class SparseMatrix:
         column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
 
         if val == 0 and self.getElement(i, j) is not 0:
+            # Delete element from position i,j in data and cindex lists
             data_col_index = self.__getSparseIndex(i, j)
             del self.__data[data_col_index]
             del self.__cindex[data_col_index]
+            # Update row boundaries
             for index, r in enumerate(self.__rbounds):
                 if index > i:
                     self.__rbounds[index] -= 1
             return
 
-        # Check if element at position i,j is non-zero.  If so, replace it.
-        # If not, insert new value into sparse representation.
-        if self.getElement(i, j):
+        if self.getElement(i, j) is not 0:
+            # Update the data at i,j with new value
             data_col_index = self.__getSparseIndex(i, j)
             self.__data[data_col_index] = val
         else:
-            print("Need to add new non-zero element")
-
+            # Find the index in cindex where we need to insert the new element
+            insert_after_cindex = 0
+            for col in range(data_bounds[0], data_bounds[1]):
+                if self.__cindex[col] < j:
+                    insert_after_cindex = col
+            insert_after_cindex += 1
+            self.__data.insert(insert_after_cindex, val)
+            self.__cindex.insert(insert_after_cindex, j)
+            # Update row boundaries
+            for index, r in enumerate(self.__rbounds):
+                if index > i:
+                    self.__rbounds[index] += 1
 
     def getElement(self, i, j):
         """Return the element at given index; if index is out of bounds, raise Exception

@@ -116,15 +116,16 @@ class SparseMatrix:
         data_values = self.__data[data_bounds[0]:data_bounds[1]]
         column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
 
-        if val == 0 and self.getElement(i, j) is not 0:
-            # Delete element from position i,j in data and cindex lists
-            data_col_index = self.__getSparseIndex(i, j)
-            del self.__data[data_col_index]
-            del self.__cindex[data_col_index]
-            # Update row boundaries
-            for index, r in enumerate(self.__rbounds):
-                if index > i:
-                    self.__rbounds[index] -= 1
+        if val == 0:
+            if self.getElement(i, j) is not 0:
+                # Delete element from position i,j in data and cindex lists
+                data_col_index = self.__getSparseIndex(i, j)
+                del self.__data[data_col_index]
+                del self.__cindex[data_col_index]
+                # Update row boundaries
+                for index, r in enumerate(self.__rbounds):
+                    if index > i:
+                        self.__rbounds[index] -= 1
             return
 
         if self.getElement(i, j) is not 0:
@@ -273,7 +274,15 @@ class SparseMatrix:
         >>> MATRIX.add(z).check()
         ([10], [2], [0, 0, 0, 1, 1, 1])
         """
-        return MATRIX
+        if self.nrows != other.nrows or self.ncols != other.ncols:
+            raise Exception("Both matrix objects must have the same dimensions")
+
+        new_matrix = SparseMatrix(self.nrows, self.ncols)
+        for row in range(self.nrows):
+            for col in range(self.ncols):
+                new_matrix.setElement(row, col,
+                        self.getElement(row, col) + other.getElement(row, col))
+        return new_matrix
 
     def transpose(self):
         """Return a new SparseMatrix obtained by transposing self.
@@ -305,7 +314,15 @@ class SparseMatrix:
         4 -1 0 0 2
         6 1 2 2 4
         """
-        return MATRIX
+        if self.nrows != other.nrows or self.ncols != other.ncols:
+            raise Exception("Both matrix objects must have the same dimensions")
+
+        new_matrix = SparseMatrix(self.nrows, self.ncols)
+        for row in range(self.nrows):
+            for col in range(self.ncols):
+                new_matrix.setElement(row, col,
+                        self.getElement(row, col) * other.getElement(row, col))
+        return new_matrix
 
 # Do not modify the code below this line!!
 

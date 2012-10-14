@@ -133,10 +133,18 @@ class SparseMatrix:
         else:
             # Find the index in cindex where we need to insert the new element
             insert_after_cindex = 0
-            for col in range(data_bounds[0], data_bounds[1]):
-                if self.__cindex[col] < j:
-                    insert_after_cindex = col
-            insert_after_cindex += 1
+            # If the row is empty, we start looking for the column at the
+            # current boundary
+            if data_bounds[0] == data_bounds[1]:
+                insert_after_cindex = data_bounds[1]
+            else:
+                # Otherwise, find the highest cindex corresponding to this
+                # row boundary and return it +1.  That's where the new
+                # column and data list item belongs.
+                for col in range(data_bounds[0], data_bounds[1]):
+                    if self.__cindex[col] < j:
+                        insert_after_cindex = col
+                insert_after_cindex += 1
             self.__data.insert(insert_after_cindex, val)
             self.__cindex.insert(insert_after_cindex, j)
             # Update row boundaries
@@ -220,10 +228,7 @@ class SparseMatrix:
         result = SparseMatrix(self.nrows, j - i)
 
         for result_col, self_col in enumerate(range(i, j)):
-            print "Self_col: %d = %d in new matrix" % (self_col, result_col)
             for row in range(self.nrows):
-                val = self.getElement(row, self_col)
-                print "setElement(%d, %d) = %s" % (row, result_col, val)
                 result.setElement(row, result_col, self.getElement(row, self_col))
 
         return result

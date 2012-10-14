@@ -249,6 +249,9 @@ class SparseMatrix:
         >>> MATRIX.reshape(6,5).check()
         ([1, 3, -2, 1, 1, -1, 4, -4, 2], [1, 2, 4, 1, 2, 1, 1, 3, 4], [0, 2, 3, 5, 6, 6, 9])
         """
+        if (self.nrows * self.ncols) != (nr, nc):
+            raise Exception("Matrix dimensions are not compatible")
+
         return MATRIX
     
     def scale(self, f):

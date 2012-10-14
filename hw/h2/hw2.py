@@ -305,7 +305,11 @@ class SparseMatrix:
         >>> MATRIX.transpose().check()
         ([1, 1, 3, 4, -2, -1, -4, 1, 2], [2, 0, 0, 4, 1, 2, 4, 1, 4], [0, 1, 2, 4, 5, 7, 9])
         """
-        return MATRIX
+        new_matrix = SparseMatrix(self.ncols, self.nrows)
+        for row in range(self.nrows):
+            for col in range(self.ncols):
+                new_matrix.setElement(col, row, self.getElement(row, col))
+        return new_matrix
 
     def multiply(self, other):
         """Return a new SparseMatrix obtained by taking the matrix product of self and other

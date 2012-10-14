@@ -72,7 +72,13 @@ class SparseMatrix:
         0 0 0 0 0 0
         0 0 4 0 -4 2
         """
-        return self.getRowSlice(0, self.nrows)
+        
+        rows = []
+        for r in range(self.nrows):
+            cols = [self.getElement(r, c) for c in range(self.ncols)]
+            therow = " ".join(map(str, cols))
+            rows.append(therow)
+        return "\n".join(rows)
 
     def __getSparseIndex(self, i, j):
         """Return the index in the __data and __cindex attributes of the 
@@ -192,20 +198,13 @@ class SparseMatrix:
         if i < 0 or j > self.nrows:
             raise IndexError("Indices out of bounds")
 
-        results = []
+        result = SparseMatrix(j - i, self.ncols)
 
-        for row in range(i, j):
-            complete_row = [0] * self.ncols
-            data_bounds = self.__rbounds[row:row+2]
-            data_values = self.__data[data_bounds[0]:data_bounds[1]]
-            column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+        for result_row, self_row in enumerate(range(i, j)):
+            for col in range(self.ncols):
+                result.setElement(result_row, col, self.getElement(self_row, col))
 
-            for column_and_data in zip(column_positions, data_values):
-                complete_row[column_and_data[0]] = column_and_data[1]
-            
-            results.append(' '.join([str(d) for d in complete_row]))
-            
-        return '\n'.join(results)
+        return result
 
     def getColumnSlice(self, i, j):
         """Return a SparseMatrix corresponding to the given slice of column indices.

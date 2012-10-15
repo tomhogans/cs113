@@ -230,9 +230,22 @@ class SparseMatrix:
 
         result = SparseMatrix(self.nrows, j - i)
 
-        for result_col, self_col in enumerate(range(i, j)):
-            for row in range(self.nrows):
-                result.setElement(row, result_col, self.getElement(row, self_col))
+        # Get cindex and data values for each row
+        for row in range(self.nrows):
+            data_bounds = self.__rbounds[row:row+2]
+            data_values = self.__data[data_bounds[0]:data_bounds[1]]
+            column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+            # For each data value in this row, get the associated column
+            for index, item in enumerate(data_values):
+                the_col = column_positions[index]
+
+                # If the column is in the range we want, subtract `i` and
+                # set the item from data_values into the current row and
+                # column that we just computed.
+                if the_col >= i and the_col < j:
+                    the_col = the_col - i
+                    result.setElement(row, the_col, item)
 
         return result
     

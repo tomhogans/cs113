@@ -72,7 +72,6 @@ class SparseMatrix:
         0 0 0 0 0 0
         0 0 4 0 -4 2
         """
-        
         rows = []
         for r in range(self.nrows):
             cols = [self.getElement(r, c) for c in range(self.ncols)]
@@ -201,10 +200,15 @@ class SparseMatrix:
         result = SparseMatrix(j - i, self.ncols)
 
         for result_row, self_row in enumerate(range(i, j)):
-            for col in range(self.ncols):
-                result.setElement(result_row, col, self.getElement(self_row, col))
+            data_bounds = self.__rbounds[self_row:self_row+2]
+            data_values = self.__data[data_bounds[0]:data_bounds[1]]
+            column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+            for index, item in enumerate(data_values):
+                result.setElement(result_row, column_positions[index], item)
 
         return result
+
 
     def getColumnSlice(self, i, j):
         """Return a SparseMatrix corresponding to the given slice of column indices.
@@ -249,10 +253,15 @@ class SparseMatrix:
         >>> MATRIX.reshape(6,5).check()
         ([1, 3, -2, 1, 1, -1, 4, -4, 2], [1, 2, 4, 1, 2, 1, 1, 3, 4], [0, 2, 3, 5, 6, 6, 9])
         """
-        if (self.nrows * self.ncols) != (nr, nc):
+        if (self.nrows * self.ncols) != (nr * nc):
             raise Exception("Matrix dimensions are not compatible")
 
-        return MATRIX
+        result = SparseMatrix(nr, nc)
+
+        # Use generator?
+        # Or: while loop with 2 sets of incrementing row/col combos for each matrix
+
+        return result
     
     def scale(self, f):
         """Scale the values in the matrix by given factor
@@ -332,7 +341,11 @@ class SparseMatrix:
         4 -1 0 0 2
         6 1 2 2 4
         """
-        return MATRIX
+        if self.ncols != other.nrows:
+            raise Exception("Incompatible dimensions")
+
+        new_matrix = SparseMatrix(self.ncols, other.nrows)
+        return new_matrix
 
 # Do not modify the code below this line!!
 

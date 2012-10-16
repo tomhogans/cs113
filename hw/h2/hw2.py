@@ -275,8 +275,13 @@ class SparseMatrix:
 
         result = SparseMatrix(nr, nc)
 
-        # Or: while loop with 2 sets of incrementing row/col combos for each matrix
+        # TODO: Implement function
 
+        for row in range(nr):
+            for column in range(nc):
+                # Get next element from data and cindex, adjust cindex, and setElement
+                pass
+            
         return result
     
     def scale(self, f):
@@ -313,6 +318,7 @@ class SparseMatrix:
         >>> MATRIX.add(z).check()
         ([10], [2], [0, 0, 0, 1, 1, 1])
         """
+        # TODO: Refactor to not use getElement
         if self.nrows != other.nrows or self.ncols != other.ncols:
             raise Exception("Both matrix objects must have the same dimensions")
 
@@ -333,6 +339,7 @@ class SparseMatrix:
         >>> MATRIX.transpose().check()
         ([1, 1, 3, 4, -2, -1, -4, 1, 2], [2, 0, 0, 4, 1, 2, 4, 1, 4], [0, 1, 2, 4, 5, 7, 9])
         """
+        # TODO: Refactor to not use getElement
         new_matrix = SparseMatrix(self.ncols, self.nrows)
         for row in range(self.nrows):
             for col in range(self.ncols):
@@ -361,6 +368,9 @@ class SparseMatrix:
             raise Exception("Incompatible dimensions")
 
         new_matrix = SparseMatrix(self.ncols, other.nrows)
+
+        # TODO: Implement function
+
         return new_matrix
 
 # Do not modify the code below this line!!

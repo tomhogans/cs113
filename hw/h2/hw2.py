@@ -79,17 +79,6 @@ class SparseMatrix:
             rows.append(therow)
         return "\n".join(rows)
 
-    def __getSparseIndex(self, i, j):
-        """Return the index in the __data and __cindex attributes of the 
-        element specified by the coordinates i, j in the matrix."""
-        data_bounds = self.__rbounds[i:i+2]
-        
-        for col in range(data_bounds[0], data_bounds[1]+1):
-            if self.__cindex[col] == j:
-                return col
-
-        raise IndexError("Index not found")
-
     def setElement(self, i, j, val):
         """Set the element at given index to val; if index is out of bounds, raise Exception
 
@@ -120,9 +109,15 @@ class SparseMatrix:
         data_bounds = self.__rbounds[i:i+2]
 
         if val == 0:
+            # Delete element from position i,j in data and cindex lists if 
+            # a non-zero element exists at that location
             if self.getElement(i, j) is not 0:
-                # Delete element from position i,j in data and cindex lists
-                data_col_index = self.__getSparseIndex(i, j)
+                # Create a list containing a single element, where
+                # self.__cindex[col] == j (the column we want) and select
+                # the first element from that list.
+                data_col_index = [col 
+                        for col in range(data_bounds[0], data_bounds[1]+1) 
+                        if self.__cindex[col] == j][0]
                 del self.__data[data_col_index]
                 del self.__cindex[data_col_index]
                 # Update row boundaries
@@ -131,9 +126,14 @@ class SparseMatrix:
                         self.__rbounds[index] -= 1
             return
 
+        # Update the data at i,j with new value.
         if self.getElement(i, j) is not 0:
-            # Update the data at i,j with new value
-            data_col_index = self.__getSparseIndex(i, j)
+            # Create a list containing a single element, where
+            # self.__cindex[col] == j (the column we want) and select
+            # the first element from that list.
+            data_col_index = [col 
+                    for col in range(data_bounds[0], data_bounds[1]+1) 
+                    if self.__cindex[col] == j][0]
             self.__data[data_col_index] = val
         else:
             # Find the index in cindex where we need to insert the new element
@@ -150,6 +150,7 @@ class SparseMatrix:
                     if self.__cindex[col] < j:
                         insert_after_cindex = col
                 insert_after_cindex += 1
+
             self.__data.insert(insert_after_cindex, val)
             self.__cindex.insert(insert_after_cindex, j)
             # Update row boundaries
@@ -271,7 +272,6 @@ class SparseMatrix:
 
         result = SparseMatrix(nr, nc)
 
-        # Use generator?
         # Or: while loop with 2 sets of incrementing row/col combos for each matrix
 
         return result

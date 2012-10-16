@@ -6,6 +6,7 @@ Student: F. Thomas Hogans (125005620)
 """
 import copy
 
+
 class SparseMatrix:
     """A class for sparse matrices with integer entries.
 
@@ -114,7 +115,7 @@ class SparseMatrix:
             if self.getElement(i, j) is not 0:
                 # Create a list containing a single element, where
                 # self.__cindex[col] == j (the column we want) and select
-                # the first element from that list.
+                # assign first element from that list to data_col_index.
                 data_col_index = [col 
                         for col in range(data_bounds[0], data_bounds[1]+1) 
                         if self.__cindex[col] == j][0]
@@ -130,7 +131,7 @@ class SparseMatrix:
         if self.getElement(i, j) is not 0:
             # Create a list containing a single element, where
             # self.__cindex[col] == j (the column we want) and select
-            # the first element from that list.
+            # assign first element from that list to data_col_index.
             data_col_index = [col 
                     for col in range(data_bounds[0], data_bounds[1]+1) 
                     if self.__cindex[col] == j][0]
@@ -173,6 +174,8 @@ class SparseMatrix:
         if j < 0 or j >= self.ncols:
             raise IndexError("Column index out of bounds")
 
+        # Get values from the sparse representation lists that are specific
+        # to the row in question (i).
         data_bounds = self.__rbounds[i:i+2]
         data_values = self.__data[data_bounds[0]:data_bounds[1]]
         column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]

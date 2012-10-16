@@ -3,6 +3,8 @@ Programming Assignment 2
 Handed out: 10/2/12
 Due back: 10/15/12 by midnight
 Student: F. Thomas Hogans (125005620)
+
+Note: This copy is the second submission.
 """
 import copy
 
@@ -341,7 +343,6 @@ class SparseMatrix:
         >>> MATRIX.add(z).check()
         ([10], [2], [0, 0, 0, 1, 1, 1])
         """
-        # TODO: Refactor to not use getElement
         if self.nrows != other.nrows or self.ncols != other.ncols:
             raise Exception("Both matrix objects must have the same dimensions")
 
@@ -395,11 +396,11 @@ class SparseMatrix:
         if self.ncols != other.nrows:
             raise Exception("Incompatible dimensions")
 
-        new_matrix = SparseMatrix(self.ncols, other.nrows)
+        result = SparseMatrix(self.ncols, other.nrows)
 
         # TODO: Implement function
 
-        return new_matrix
+        return result
 
 # Do not modify the code below this line!!
 

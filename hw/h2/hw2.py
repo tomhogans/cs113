@@ -398,8 +398,13 @@ class SparseMatrix:
 
         result = SparseMatrix(self.nrows, other.ncols)
 
-        print("Self dimensions: %d rows, %d cols" % (self.nrows, self.ncols))
-        print("Other dimensions: %d rows, %d cols" % (other.nrows, other.ncols))
+        for row in range(self.nrows):
+            row_vals = [self.getElement(row, c) for c in range(self.ncols)]
+            for column in range(other.ncols):
+                col_vals = [other.getElement(r, column) for r in range(other.nrows)]
+                products = sum([x*y for x, y in zip(row_vals, col_vals)])
+                if products:
+                    result.setElement(row, column, products)
 
         return result
 

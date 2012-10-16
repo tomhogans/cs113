@@ -396,9 +396,10 @@ class SparseMatrix:
         if self.ncols != other.nrows:
             raise Exception("Incompatible dimensions")
 
-        result = SparseMatrix(self.ncols, other.nrows)
+        result = SparseMatrix(self.nrows, other.ncols)
 
-        # TODO: Implement function
+        print("Self dimensions: %d rows, %d cols" % (self.nrows, self.ncols))
+        print("Other dimensions: %d rows, %d cols" % (other.nrows, other.ncols))
 
         return result
 

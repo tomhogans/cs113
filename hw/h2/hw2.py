@@ -275,6 +275,9 @@ class SparseMatrix:
 
         result = SparseMatrix(nr, nc)
 
+        # This list will be populated with tuples in the form of
+        # (distance, value), where distance is the number of columns (including
+        # zeros) from the beginning of the matrix in row-major order.
         elements_with_distance = []
 
         # Go through current matrix row by row
@@ -359,12 +362,17 @@ class SparseMatrix:
         >>> MATRIX.transpose().check()
         ([1, 1, 3, 4, -2, -1, -4, 1, 2], [2, 0, 0, 4, 1, 2, 4, 1, 4], [0, 1, 2, 4, 5, 7, 9])
         """
-        # TODO: Refactor to not use getElement
-        new_matrix = SparseMatrix(self.ncols, self.nrows)
+        result = SparseMatrix(self.ncols, self.nrows)
+
         for row in range(self.nrows):
-            for col in range(self.ncols):
-                new_matrix.setElement(col, row, self.getElement(row, col))
-        return new_matrix
+            data_bounds = self.__rbounds[row:row+2]
+            data_values = self.__data[data_bounds[0]:data_bounds[1]]
+            column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+            for index, value in enumerate(data_values):
+                result.setElement(column_positions[index], row, value)
+
+        return result
 
     def multiply(self, other):
         """Return a new SparseMatrix obtained by taking the matrix product of self and other

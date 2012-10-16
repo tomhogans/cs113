@@ -275,13 +275,33 @@ class SparseMatrix:
 
         result = SparseMatrix(nr, nc)
 
-        # TODO: Implement function
+        elements_with_distance = []
 
-        for row in range(nr):
-            for column in range(nc):
-                # Get next element from data and cindex, adjust cindex, and setElement
-                pass
-            
+        # Go through current matrix row by row
+        for row in range(self.nrows):
+            data_bounds = self.__rbounds[row:row+2]
+            data_values = self.__data[data_bounds[0]:data_bounds[1]]
+            column_positions = self.__cindex[data_bounds[0]:data_bounds[1]]
+
+            # For each value in this row, calculate the distance in columns
+            # from the beginning of the current matrix.
+            for index, value in enumerate(data_values):
+                distance = (row * self.ncols) + column_positions[index]
+                elements_with_distance.append((distance, value))
+
+        # Go through new matrix row by row
+        for row in range(result.nrows):
+            # Calculate distance boundaries for this row
+            from_distance = row * result.ncols
+            end_distance = (row + 1) * result.ncols
+            # If the distaince is between from_distance and end_distaince then
+            # the value belongs in this row.
+            for distance, value in elements_with_distance:
+                if distance >= from_distance and distance < end_distance:
+                    # Calculate the column in result matrix for the value
+                    column_in_result = distance - (row * result.ncols)
+                    result.setElement(row, column_in_result, value)
+
         return result
     
     def scale(self, f):

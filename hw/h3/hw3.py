@@ -194,7 +194,7 @@ class Polynomial(dict):
         >>> P2(1)
         -1
         """
-        return 0
+        return sum([coeff * (x ** exp) for exp, coeff in self.items()])
 
     def derivative(self):
         """Return the first derivative
@@ -205,7 +205,8 @@ class Polynomial(dict):
         [(1, 4), (2, -9)]
         """
         result = Polynomial()
-        [result.addTerm(exp - 1, coeff * exp) for exp, coeff in self.items()]
+        for exp, coeff in self.items():
+            result.addTerm(exp - 1, coeff * exp)
         return result
 
 

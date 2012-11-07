@@ -79,7 +79,10 @@ class Polynomial(dict):
         >>> P1.degree()
         3
         """
-        return -1
+        if not self.items():
+            return 0
+        else:
+            return sorted(self.items(), reverse=True)[0][0]
 
     def __repr__(self):
         """Return a nice string representation of the polynomial
@@ -119,7 +122,13 @@ class Polynomial(dict):
         >>> list(P3.items())
         [(0, 10)]
         """
-        pass
+        if expo in self:
+            self[expo] += coeff
+        else:
+            self[expo] = coeff
+        for k, v in list(self.items()):
+            if v == 0:
+                del self[k]
     
     def __add__(self,other):
         """Returns the polynomial obtained by adding self with other.

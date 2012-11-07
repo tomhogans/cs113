@@ -126,6 +126,7 @@ class Polynomial(dict):
             self[expo] += coeff
         else:
             self[expo] = coeff
+        # Remove any keys where value (coefficient) is 0
         for k, v in list(self.items()):
             if v == 0:
                 del self[k]
@@ -203,7 +204,10 @@ class Polynomial(dict):
         >>> list(sorted(P1.derivative().items()))
         [(1, 4), (2, -9)]
         """
-        return Polynomial()
+        result = Polynomial()
+        [result.addTerm(exp - 1, coeff * exp) for exp, coeff in self.items()]
+        return result
+
 
 # Do not modify anything below this line!!!
 

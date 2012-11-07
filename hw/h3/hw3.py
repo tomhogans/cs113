@@ -98,8 +98,18 @@ class Polynomial(dict):
         >>> P2
         -11x +10
         """
-        return "x^-1"
-    
+        terms = []
+        for exp, coeff in sorted(self.items(), reverse=True):
+            if exp == 0:
+                terms.append("{:+}".format(coeff))
+            elif exp == 1:
+                terms.append("{:+}x".format(coeff))
+            else:
+                terms.append("{:+}x^{}".format(coeff, exp))
+        if not terms:
+            terms = ["0"]
+        return " ".join(terms)
+
     def addTerm(self, expo, coeff):
         """Add a term to the polynomial with given coefficient and exponent
 
@@ -197,8 +207,3 @@ if __name__=="__main__":
     import doctest
     doctest.testmod()
 
-
-
-    
-    
-    

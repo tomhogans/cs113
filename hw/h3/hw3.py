@@ -145,10 +145,7 @@ class Polynomial(dict):
         """
         result = copy.deepcopy(self)
         for other_exp, other_coeff in other.items():
-            if other_exp in result:
-                result[other_exp] += other_coeff
-            else:
-                result.addTerm(other_exp, other_coeff)
+            result.addTerm(other_exp, other_coeff)
         return result
 
     def __mul__(self, other):

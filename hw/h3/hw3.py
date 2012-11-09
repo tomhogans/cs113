@@ -80,10 +80,8 @@ class Polynomial(dict):
         >>> P1.degree()
         3
         """
-        if not self.items():
-            return 0
-        else:
-            return sorted(self.items(), reverse=True)[0][0]
+        return sorted(self.items(), reverse=True)[0][0] \
+            if self.items() else 0
 
     def __repr__(self):
         """Return a nice string representation of the polynomial
@@ -189,10 +187,7 @@ class Polynomial(dict):
         >>> 3*P2
         -33x +30
         """
-        result = Polynomial()
-        for exp, coeff in self.items():
-            result.addTerm(exp, coeff * scalar)
-        return result
+        return self.__mul__(scalar)
 
     def __sub__(self,other):
         """Returns the polynomial obtained by subtracting other from self.
@@ -207,11 +202,9 @@ class Polynomial(dict):
         """
         result = copy.deepcopy(self)
         for other_exp, other_coeff in other.items():
-            if other_exp in result:
-                result[other_exp] -= other_coeff
-            else:
+            if not other_exp in result:
                 result[other_exp] = 0
-                result[other_exp] -= other_coeff
+            result[other_exp] -= other_coeff
         return result
     
             

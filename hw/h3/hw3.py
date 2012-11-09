@@ -142,7 +142,13 @@ class Polynomial(dict):
         >>> list(sorted(P.items()))
         [(1, -11), (2, 2), (3, -3)]
         """
-        return Polynomial()
+        result = copy.deepcopy(self)
+        for other_exp, other_coeff in other.items():
+            if other_exp in result:
+                result[other_exp] += other_coeff
+            else:
+                result.addTerm(other_exp, other_coeff)
+        return result
 
     def __mul__(self, other):
         """Returns the polynomial obtained by multiplying self with other.
@@ -157,7 +163,21 @@ class Polynomial(dict):
         >>> list(sorted(Q.items()))
         [(0, -100), (1, 110), (2, 20), (3, -52), (4, 33)]
         """
-        return Polynomial()
+        result = Polynomial()
+        
+        # Assume any 'other' object that doesn't act like a dictionary
+        # is a scalar value.  Test for behavior instead of type since
+        # Polynomial and any subclasses are all derived from builtins.dict.
+        if not hasattr(other, 'items'):
+            for exp, coeff in self.items():
+                result.addTerm(exp, coeff * other)
+            return result
+
+        for self_exp, self_coeff in self.items():
+            for other_exp, other_coeff in other.items():
+                result.addTerm(self_exp + other_exp,
+                        self_coeff * other_coeff)
+        return result
 
     # this function is already implemented: do not change it!!
     def __rmul__(self, scalar):
@@ -166,7 +186,10 @@ class Polynomial(dict):
         >>> 3*P2
         -33x +30
         """
-        return Polynomial()
+        result = Polynomial()
+        for exp, coeff in self.items():
+            result.addTerm(exp, coeff * scalar)
+        return result
 
     def __sub__(self,other):
         """Returns the polynomial obtained by subtracting other from self.
@@ -179,7 +202,14 @@ class Polynomial(dict):
         >>> list(sorted(P.items()))
         [(0, 20), (1, -11), (2, -2), (3, 3)]
         """
-        return Polynomial()
+        result = copy.deepcopy(self)
+        for other_exp, other_coeff in other.items():
+            if other_exp in result:
+                result[other_exp] -= other_coeff
+            else:
+                result[other_exp] = 0
+                result[other_exp] -= other_coeff
+        return result
     
             
     def __call__(self, x):

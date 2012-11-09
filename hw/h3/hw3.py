@@ -3,6 +3,7 @@ Programming Assignment 2
 Student: Tom Hogans (125005620)
 Handed out: 11/5/12
 Due back: 11/14/12 by midnight
+Note: second submission, refactored to clean things up
 """
 import copy
 

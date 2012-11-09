@@ -1,5 +1,6 @@
 """
 Programming Assignment 2
+Student: Tom Hogans (125005620)
 Handed out: 11/5/12
 Due back: 11/14/12 by midnight
 """
@@ -111,7 +112,9 @@ class Polynomial(dict):
                 terms.append("{:+}x^{}".format(coeff, exp))
         if not terms:
             terms = ["0"]
-        return " ".join(terms)
+        # Return the terms separated by a space, removing the positive sign of
+        # the first term, if it exists.
+        return " ".join(terms).lstrip("+")
 
     def addTerm(self, expo, coeff):
         """Add a term to the polynomial with given coefficient and exponent

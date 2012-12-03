@@ -34,20 +34,9 @@ def getUserResponse(word):
         return getUserResponse(word)
 
 
-def main():
-    files = sys.argv[1:]
-
-    if not files:
-        print("No input file")
-        return
-
-    if len(files) > 1:
-        print("Cannot spellcheck more than one document at a time")
-
-    file_name = files[0]
-
+def checkFile(file_name, dictionary_file="words.dat"):
     # Set up dictionary based on words.dat
-    d = Dictionary(file_name="words.dat")
+    d = Dictionary(file_name=dictionary_file)
     [d.add_word(w) for w in ADDITIONAL_VALID_WORDS]
 
     file_in = open(file_name, 'r')
@@ -58,33 +47,33 @@ def main():
     current_word = ""
 
     while True:
+        # Read one character at a time from the input file
         next_char = file_in.read(1)
+        # Exit the loop when there's nothing else to read
         if not next_char:
             break
+
         if next_char in string.ascii_letters:
             current_word += next_char
         else:
             if len(current_word) > 1:
                 # Check if we should automatically ignore or replace the word
                 if current_word.lower() in ignored_words:
-                    # Take no action
                     pass
                 elif current_word.lower() in replacements:
                     # Replace the word with previously specified word
                     current_word = replacements[current_word]
                 else:
+
                     # No automatic action taken, so check if it's OK
                     if not current_word.lower() in d:
                         (resp, new_word) = getUserResponse(current_word)
-                        if resp is 'r':
+                        if resp is 'r':  # Replace word one time
                             current_word = new_word
-                        elif resp is 'p':
+                        elif resp is 'p':  # Always replace this word
                             replacements[current_word.lower()] = new_word
                             current_word = new_word
-                        elif resp is 'i':
-                            # Ignore misspelled word this time
-                            pass
-                        elif resp is 'n':
+                        elif resp is 'n':  # Always ignore this word
                             ignored_words.append(current_word)
                 file_out.write(current_word)
             else:
@@ -92,7 +81,22 @@ def main():
             current_word = ""
             file_out.write(next_char)
 
-    print("Spellchecked file written to {}.out.".format(files[0]))
+    file_in.close()
+    file_out.close()
+    print("Spellchecked file written to {}.out.".format(file_name))
+
+
+def main():
+    files = sys.argv[1:]
+
+    if not files:
+        print("No input file")
+        return
+
+    if len(files) > 1:
+        print("Cannot spellcheck more than one document at a time")
+
+    checkFile(files[0])
 
 
 if __name__ == "__main__":

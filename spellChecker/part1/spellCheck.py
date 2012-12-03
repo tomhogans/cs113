@@ -62,7 +62,7 @@ def checkFile(file_name, dictionary_file="words.dat"):
                     pass
                 elif current_word.lower() in replacements:
                     # Replace the word with previously specified word
-                    current_word = replacements[current_word]
+                    current_word = replacements[current_word.lower()]
                 else:
 
                     # No automatic action taken, so check if it's OK

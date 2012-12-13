@@ -3,6 +3,16 @@
 import string
 
 
+def makehash(word, m):
+    """ Hash function that accepts a string of characters and outputs
+    an integer between 0 and m-1. """
+    if not word:
+        return 0
+    if len(word) == 1:
+        return 26 * ord(word) % m
+    return (26 * makehash(word[1:], m) + ord(word[0])) % m
+
+
 class Dictionary:
     """ Implements a dict-based object that whose keys are distinct "words"
     (where words are any alphabetic sequence of length two or greater) and
@@ -10,10 +20,12 @@ class Dictionary:
 
     ALLOWED_LETTERS = string.ascii_letters
     ADDITIONAL_VALID_WORDS = ['a', 'i']
+    CACHE_SIZE = 5
 
     def __init__(self, file_name=None):
         """ Constructor that accepts an optional file_name to load words. """
         self.word_list = {}  # Dict of {word: frequency}
+        self.word_cache = {}  # Dict of {word: frequency} for most freq words
         self.replacement_words = {}
         self.ignored_words = []
         [self.add_word(w) for w in self.ADDITIONAL_VALID_WORDS]
@@ -56,6 +68,7 @@ class Dictionary:
     def save(self, file_name):
         """ Save the words to the specified file_name. """
         try:
+            # TODO: Write words in self.cache_list first, then self.word_list
             open(file_name, 'w').write("\n".join(self.word_list.keys()))
         except IOError as e:
             print(e)
@@ -63,6 +76,8 @@ class Dictionary:
     def load(self, file_name):
         """ Load words from the specified dictionary at file_name. """
         try:
+            # TODO: Load first self.CACHE_SIZE words into self.cache_list, then
+            # load remaining words into 
             [self.add_word(w) for w in open(file_name).read().splitlines()]
         except IOError as e:
             print(e)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import string
 
 from dictionary import Dictionary
 
@@ -18,9 +17,10 @@ def parseWords(file_name):
         with open(file_name, 'r') as f:
             while True:
                 next_char = f.read(1)
+                # Keep track of the last non-whitespace character
                 if not next_char:
                     break
-                if next_char in string.ascii_letters:
+                if next_char in Dictionary.ALLOWED_LETTERS:
                     current_word += next_char
                 else:
                     if len(current_word) > 1:

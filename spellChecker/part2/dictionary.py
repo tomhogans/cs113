@@ -19,6 +19,7 @@ class Dictionary:
     whose values represent the frequency with which the words appear. """
 
     ALLOWED_LETTERS = string.ascii_letters
+    WHITESPACE = string.whitespace
     ADDITIONAL_VALID_WORDS = ['a', 'i']
     CACHE_SIZE = 5
 
@@ -32,10 +33,15 @@ class Dictionary:
         if file_name:
             self.load(file_name)
 
-    def verify(self, word):
+    def verify(self, word, begins_sentence=False):
         """ Verifies whether the word appears in the dictionary and returns
         a tuple of (result, word), where result is True or False and word is
-        either the original word value or a new, replaced word. """
+        either the original word value or a new, replaced word.  If the word
+        does not begin a sentence but is capitalized, we assume it's a proper
+        noun and does not need to be spellchecked. """
+        if word[0] == word[0].upper() and not begins_sentence:
+            return (True, word)
+
         if len(word) < 2:
             return (True, word)
 

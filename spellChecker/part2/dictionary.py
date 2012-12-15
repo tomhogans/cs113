@@ -18,7 +18,7 @@ class Dictionary:
     (where words are any alphabetic sequence of length two or greater) and
     whose values represent the frequency with which the words appear. """
 
-    ALLOWED_LETTERS = string.ascii_letters
+    ALLOWED_LETTERS = string.ascii_letters + "'"
     WHITESPACE = string.whitespace
     ADDITIONAL_VALID_WORDS = ['a', 'i']
     CACHE_SIZE = 5
@@ -39,6 +39,9 @@ class Dictionary:
         either the original word value or a new, replaced word.  If the word
         does not begin a sentence but is capitalized, we assume it's a proper
         noun and does not need to be spellchecked. """
+        if not word:
+            return (True, "")
+
         if word[0] == word[0].upper() and not begins_sentence:
             return (True, word)
 

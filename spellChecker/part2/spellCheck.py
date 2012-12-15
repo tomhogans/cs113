@@ -38,6 +38,7 @@ def checkFile(file_name, dictionary_file="words.dat"):
     file_out = open("{}.out".format(file_name), 'w')
 
     current_word = ""
+    starting_sentence = True
 
     while True:
         # Read one character at a time from the input file
@@ -48,9 +49,10 @@ def checkFile(file_name, dictionary_file="words.dat"):
 
         if next_char in d.ALLOWED_LETTERS:
             current_word += next_char
-        else:
+        elif current_word:
             # Verify the current_word with the dictionary
-            resp, current_word = d.verify(current_word)
+            resp, current_word = d.verify(current_word, 
+                    begins_sentence=starting_sentence)
             if not resp:  # Word was not found in dictionary
                 resp, new_word = getUserResponse(current_word)
                 d.update(resp, current_word, new_word)
@@ -58,6 +60,15 @@ def checkFile(file_name, dictionary_file="words.dat"):
             file_out.write(current_word)
             current_word = ""
             file_out.write(next_char)
+            # Reset the sentence tracker
+            starting_sentence = False
+        else:
+            file_out.write(next_char)
+
+        if next_char == '.':
+            # After we've already handled the word, then check if we're 
+            # starting a new sentence.
+            starting_sentence = True
 
     file_in.close()
     file_out.close()

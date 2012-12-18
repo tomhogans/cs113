@@ -81,6 +81,34 @@ class Dictionary(dict):
         else:
             self[word] = 1
 
+    def statistics(self):
+        print("Stats on Primary Dictionary")
+        print("-"*20)
+        if self.word_cache:
+            print("Length".ljust(10) + "Number of Lists")
+            stats = {}
+            max_len = len(max(*self.word_cache.values(), key=len))
+            for i in range(max_len+1):
+                stats[i] = len([l for l in self.word_cache.values() if len(l) == i])
+            for k, v in stats.items():
+                print("{}".format(k).rjust(4) + "{}".format(v).rjust(14))
+        else:
+            print "(Empty)"
+        print(" ")
+
+        print("Stats on Secondary Dictionary")
+        print("-"*20)
+        if self.word_list:
+            print("Length".ljust(10) + "Number of Lists")
+            stats = {}
+            max_len = len(max(*self.word_list.values(), key=len))
+            for i in range(max_len+1):
+                stats[i] = len([l for l in self.word_list.values() if len(l) == i])
+            for k, v in stats.items():
+                print("{}".format(k).rjust(4) + "{}".format(v).rjust(14))
+        else:
+            print "(Empty)"
+
     def save(self, file_name):
         """ Save the words to the specified file_name. """
         try:

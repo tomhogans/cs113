@@ -5,26 +5,33 @@ import sys
 from dictionary import Dictionary
 
 
-def getUserResponse(word):
+def getUserResponse(word, word_options=[]):
     """ Prompts the user for action concerning the specified word.
 
     Returns a tuple of (response, new_word), where response is the action
     given by the user and new_word is the word entered by the user (or the
     original word if 'Ignore' option was chosen. """
 
-    resp = raw_input("\"{}\": Replace (R), replace all (P), ignore (I), "
+    resp = raw_input("\"{}\" is unknown: Replace (R), replace all (P), ignore (I), "
                      "ignore all (N), or exit (E)?  ".format(word)).lower()
     if resp == 'e':
         print("Spellcheck aborted.")
         sys.exit(0)
-    elif resp == 'r':
-        return ('r', raw_input("Enter replacement word: "))
-    elif resp == 'p':
-        return ('p', raw_input("Enter replacement word: "))
-    elif resp == 'i':
-        return ('i', word)
-    elif resp == 'n':
-        return ('n', word)
+    elif resp == 'r' or resp == 'p':
+        if word_options:
+            for i, w in enumerate(word_options):
+                print("( {} ) {}".format(i, w))
+            print("( {} ) Use my replacement".format(i+1))
+            choice = raw_input("Your choice: ")
+            if int(choice) == i+1:
+                replacement_word = raw_input("Enter replacement word: ")
+            else:
+                replacement_word = word_options[int(choice)]
+            return (resp, replacement_word)
+        else:
+            return (resp, raw_input("Enter replacement word: "))
+    elif resp == 'i' or resp == 'n':
+        return (resp, word)
     else:
         # Ask again
         return getUserResponse(word)
@@ -33,6 +40,7 @@ def getUserResponse(word):
 def checkFile(file_name, dictionary_file="words.dat"):
     # Set up dictionary based on words.dat
     d = Dictionary(file_name=dictionary_file)
+    d.statistics()
 
     file_in = open(file_name, 'r')
     file_out = open("{}.out".format(file_name), 'w')
@@ -54,7 +62,8 @@ def checkFile(file_name, dictionary_file="words.dat"):
             resp, current_word = d.verify(current_word, 
                     begins_sentence=starting_sentence)
             if not resp:  # Word was not found in dictionary
-                resp, new_word = getUserResponse(current_word)
+                resp, new_word = getUserResponse(current_word, 
+                        d.find_similar(current_word))
                 d.update(resp, current_word, new_word)
                 current_word = new_word
             file_out.write(current_word)

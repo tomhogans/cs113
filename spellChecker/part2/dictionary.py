@@ -25,7 +25,7 @@ class Dictionary(dict):
     ALLOWED_LETTERS = string.ascii_letters + "'"
     WHITESPACE = string.whitespace
     ADDITIONAL_VALID_WORDS = ['a', 'i']
-    HASH_LOAD_FACTOR = 5000
+    HASH_LOAD_FACTOR = 5001
     CACHE_SIZE = 500
 
     def __init__(self, file_name=None):
@@ -48,15 +48,21 @@ class Dictionary(dict):
             return (True, "")
 
         if word[0] == word[0].upper() and not begins_sentence:
+            # Ignore proper nouns
             return (True, word)
 
         if len(word) < 2:
+            # Ignore words less than 2 characters
             return (True, word)
 
         if word.lower() in self.replacement_words.keys():
             return (True, self.replacement_words[word.lower()])
 
-        if word.lower() in self.word_list:
+        # Compute hash for word and check both lists
+        word_hash = makehash(word.lower(), self.HASH_LOAD_FACTOR)
+        if word.lower() in self.word_cache[word_hash]:
+            return (True, word)
+        if word.lower() in self.word_list[word_hash]:
             return (True, word)
 
         if word.lower() in self.ignored_words:
@@ -137,7 +143,5 @@ class Dictionary(dict):
                         break
                     w_hash = makehash(word, self.HASH_LOAD_FACTOR)
                     self.word_list[w_hash].append(word)
-            print("Cache", self.word_cache)
-            print("List", self.word_list)
         except IOError as e:
             print(e)

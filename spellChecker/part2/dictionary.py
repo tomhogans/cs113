@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+import itertools
 import string
 
 
@@ -12,6 +13,18 @@ def makehash(word, m):
     if len(word) == 1:
         return 26 * ord(word) % m
     return (26 * makehash(word[1:], m) + ord(word[0])) % m
+
+def edits(word):
+    """ Generates possible permutations of a given word based on operations
+    comprising the "edit distance" of 1.
+    
+    Elegant function courtesy of http://norvig.com/spell-correct.html """
+    splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
+    deletes = [a + b[1:] for a, b in splits if b]
+    transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b)>1]
+    replaces = [a + c + b[1:] for a, b in splits for c in string.ascii_lowercase if b]
+    inserts = [a + c + b for a, b in splits for c in string.ascii_lowercase]
+    return set(deletes + transposes + replaces + inserts)
 
 
 class Dictionary(dict):
@@ -66,6 +79,7 @@ class Dictionary(dict):
             return (True, word)
 
         if word.lower() in self.ignored_words:
+            # Don't correct previously 'Ignore All' words
             return (True, word)
 
         return (False, word)
@@ -86,6 +100,39 @@ class Dictionary(dict):
             self[word] += 1
         else:
             self[word] = 1
+
+    def find_similar(self, word):
+        """ Creates permutations of word via deletions, insertions, 
+        substitutions, and transpositions, checking whether the given 
+        permutation exists in the dictionary and, if so, returning it in a list
+        of up to 10 possible replacements. """
+        similar_words = []
+        for w in edits(word.lower()):
+            word_hash = makehash(w, self.HASH_LOAD_FACTOR)
+            if w in self.word_cache[word_hash]:
+                similar_words.append(w)
+            if w in self.word_list[word_hash]:
+                similar_words.append(w)
+
+        # If we found less than 10 results, call edits() on its result to get
+        # all permutations with an edit distance of 2 so we can keep looking.
+        if len(similar_words) >= 10:
+            return similar_words[:10]
+
+        # Create a nested list of all the sets of permutations
+        edits_of_edits = [edits(w) for w in edits(word.lower())]
+        # Then flatten the list
+        edits_of_edits = set(itertools.chain.from_iterable(edits_of_edits))
+
+        for w in edits_of_edits:
+            word_hash = makehash(w, self.HASH_LOAD_FACTOR)
+            if w in self.word_cache[word_hash]:
+                similar_words.append(w)
+            if w in self.word_list[word_hash]:
+                similar_words.append(w)
+
+        return similar_words[:10]
+
 
     def statistics(self):
         print("Stats on Primary Dictionary")

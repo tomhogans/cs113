@@ -4,6 +4,19 @@ from collections import defaultdict
 import itertools
 import string
 
+PHONETIC_PAIRS = [
+    ('a', 'e'),
+    ('c', 's'),
+    ('c', 'k'),
+    ('e', 'i'),
+    ('g', 'j'),
+    ('i', 'y'),
+    ('o', 'u'),
+    ('v', 'w'),
+    ('s', 'z'), ]
+PHONETIC_PAIRS = PHONETIC_PAIRS + [(p2, p1) for p1, p2 in PHONETIC_PAIRS]
+PHONETIC_PAIRS = PHONETIC_PAIRS + [(p1, p1) for p1, p2 in PHONETIC_PAIRS]
+
 
 def makehash(word, m):
     """ Hash function that accepts a string of characters and outputs
@@ -16,15 +29,12 @@ def makehash(word, m):
 
 def edits(word):
     """ Generates possible permutations of a given word based on operations
-    comprising the "edit distance" of 1.
-    
-    Elegant function courtesy of http://norvig.com/spell-correct.html """
-    splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
-    deletes = [a + b[1:] for a, b in splits if b]
-    transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b)>1]
-    replaces = [a + c + b[1:] for a, b in splits for c in string.ascii_lowercase if b]
-    inserts = [a + c + b for a, b in splits for c in string.ascii_lowercase]
-    return set(deletes + transposes + replaces + inserts)
+    using the PHONETIC_PAIRS. """
+    deletes = [word.replace(p[0], ''.join(p)) for p in PHONETIC_PAIRS]
+    inserts = [word.replace(''.join(p), p[0]) for p in PHONETIC_PAIRS]
+    subs = [word.replace(p[0], p[1]) for p in PHONETIC_PAIRS]
+    swaps = [word.replace(''.join(p), ''.join((p[1], p[0]))) for p in PHONETIC_PAIRS]
+    return set(deletes + inserts + subs + swaps)
 
 
 class Dictionary(dict):
